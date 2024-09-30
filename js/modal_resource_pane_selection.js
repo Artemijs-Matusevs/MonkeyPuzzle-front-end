@@ -7,7 +7,23 @@ function create_resource_pane_selection_modal() {
         div.tabindex='-1';
         doc = prettyprint(get_sd());
 
-        div.innerHTML = '<div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" onclick="destroy_resource_pane_selection_modal()">&times;</button> <h4 class="modal-title">New Resource Pane</h4> </div> <div class="modal-body"> <p>Select a resource type</p> <select class="form-control" id="resource_type"> <option>Text</option> </select> </div> <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="destroy_resource_pane_selection_modal()">Close</button><button type="button" class="btn btn-primary" data-dismiss="modal" onclick="invoke_add_tab(); destroy_resource_pane_selection_modal();">Add</button> </div> </div> </div>';
+        div.innerHTML = `<div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" onclick="destroy_resource_pane_selection_modal()">&times;</button>
+                                    <h4 class="modal-title">New Resource Pane</h4>
+                                </div> 
+                                <div class="modal-body">
+                                    <p>Select a resource type</p>
+                                    <select class="form-control" id="resource_type"> 
+                                    <option>Text</option> </select> 
+                                </div> 
+                                <div class="modal-footer"> 
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="destroy_resource_pane_selection_modal()">Close</button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="invoke_add_tab(); destroy_resource_pane_selection_modal();">Add</button>
+                                </div>
+                            </div>
+                        </div>`;
 
         document.body.appendChild(div);
     }
