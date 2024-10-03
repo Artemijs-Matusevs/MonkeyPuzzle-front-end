@@ -13,7 +13,13 @@ function add_tab(load_id=null, type=null) {
 
     add_resource_header();
 
-    if (type === "text") { add_text_resource_body(tab_id); }
+    //Handle different resource types
+    if (type === "text") { 
+        add_text_resource_body(tab_id); 
+    }else if(type === "video"){
+        //add_video_resource_body(tab_id);
+        alert("Test");
+    }
 
     set_active_tab(tab_id+"_body");
     return tab_id
