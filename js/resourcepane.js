@@ -17,8 +17,7 @@ function add_tab(load_id=null, type=null) {
     if (type === "text") { 
         add_text_resource_body(tab_id); 
     }else if(type === "video"){
-        //add_video_resource_body(tab_id);
-        alert("Test");
+        add_video_resource_body(tab_id);
     }
 
     set_active_tab(tab_id+"_body");
