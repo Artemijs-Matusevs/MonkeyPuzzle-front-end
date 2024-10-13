@@ -87,7 +87,11 @@ function pollTranscription(id){
 
                     // Dissplay transcript
                     $('#transcript').html(tab_transcript_tools);
-                    $('#content_' + tab_id).val(response.transcript.text);
+                    var processedTranscript = response.transcript.map(function(item) {
+                        return `\n[${item.timestamp.join(' - ')}] ${item.text}`;
+                    }).join('\n');
+
+                    $('#content_' + tab_id).val(processedTranscript);
 
                 }else if(response.status === 'error'){
                     clearInterval(pollInterval);
