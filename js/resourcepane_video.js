@@ -79,7 +79,7 @@ function pollTranscription(id){
                                 <div class="form-group" id="contentgroup_`+ tab_id +`">
                                     <label>Content</label>
                                     <div id="textarea">
-                                        <textarea id="content_${tab_id}" class="form-control resource_pane_textarea_content" placeholder="Enter your source text here..." onchange="change_textarea('` + tab_id + `')" onfocus="set_focus(this)" readonly></textarea>
+                                        <textarea id="` + tab_id + `" class="form-control resource_pane_textarea_content" placeholder="Enter your source text here..." onchange="change_textarea('` + tab_id + `')" onfocus="set_focus(this)" readonly></textarea>
                                     </div>  
                                 </div> 
                             </form>
@@ -91,7 +91,7 @@ function pollTranscription(id){
                         return `\n[${item.timestamp.join(' - ')}] ${item.text}`;
                     }).join('\n');
 
-                    $('#content_' + tab_id).val(processedTranscript);
+                    $('#' + tab_id).val(processedTranscript);
 
                 }else if(response.status === 'error'){
                     clearInterval(pollInterval);
