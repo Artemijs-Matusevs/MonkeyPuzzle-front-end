@@ -18,8 +18,14 @@ function fetch_transcript(tab_id){
     $('#video-upload-form').on('submit', function(e) {
         e.preventDefault();
 
-        var formData = new FormData(this);
+        var formData = new FormData();
         formData.append('tab_id', tab_id);
+
+        // Append the file from the form input
+        var fileInput = $('#video-upload-form input[type="file"]')[0];
+        if (fileInput && fileInput.files.length > 0){
+            formData.append('video', fileInput.files[0]);
+        }
 
         $.ajax({
             url: '/upload-video',
@@ -72,6 +78,11 @@ function pollTranscription(id){
                                         <button type="button" class="btn btn-default" title="Add node from text selection" onclick="new_atom_txt_resource_button();">
                                             <i class="fa fa-puzzle-piece fa-fw fa-lg"></i>
                                         </button>
+                                </div>
+                                <div>
+                                    <video width="75%" height="50%" controls>
+                                        <source src="../uploads/${id}.mp4" type="video/mp4">
+                                    </video>
                                 </div>
                                 <div class="form-group">
                                     <label>Title</label>
