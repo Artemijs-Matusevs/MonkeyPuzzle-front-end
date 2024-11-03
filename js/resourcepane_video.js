@@ -73,9 +73,6 @@ function pollTranscription(id){
                                         <button type="button" class="btn btn-default" onclick="filemanager('save','txt','` + tab_id + `')" title="Save this resource tab to a text file">
                                             <i class="fa fa-download fa-fw fa-lg"></i>
                                         </button>
-                                        <button id="toggle_edit_lock_button" type="button" class="btn btn-default" title="Toggle editability of the content area" onclick="toggle_edit_lock();">
-                                            <i id="toggle_edit_lock_icon_` + tab_id + `" class="fa fa-lock fa-fw fa-lg"></i>
-                                        </button>
                                         <button type="button" class="btn btn-default" title="Add node from text selection" onclick="new_atom_video_resource_button();">
                                             <i class="fa fa-puzzle-piece fa-fw fa-lg"></i>
                                         </button>
@@ -102,7 +99,7 @@ function pollTranscription(id){
                     var processedTranscript = response.transcript.map(function(item) {
                         return `
                             <div id="transcript" class="trancsript-line">
-                                <div class="timestamp" data-timestamp="${item.timestamp}">
+                                <div class="timestamp" onclick=skipTo(${item.timestamp[0]}) data-timestamp="${item.timestamp}">
                                     [${item.timestamp.join(' - ')}]
                                 </div>
                                 <div class="transcript-text">${item.text}</div>

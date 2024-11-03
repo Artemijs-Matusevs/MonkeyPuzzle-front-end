@@ -179,6 +179,10 @@
         overflow-y: auto;
     }
 
+    .timestamp:hover{
+        cursor: pointer;
+        color: red;
+    }
 
     .resource_pane_title_text {
         resize: none;
