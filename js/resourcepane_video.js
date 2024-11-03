@@ -56,6 +56,7 @@ function pollTranscription(id){
             url: '/transcript-status/' + id,
             type: 'GET',
             success: function(response) {
+                console.log(response);
                 if (response.status === 'done'){
 
                     // Stop polling
@@ -75,12 +76,12 @@ function pollTranscription(id){
                                         <button id="toggle_edit_lock_button" type="button" class="btn btn-default" title="Toggle editability of the content area" onclick="toggle_edit_lock();">
                                             <i id="toggle_edit_lock_icon_` + tab_id + `" class="fa fa-lock fa-fw fa-lg"></i>
                                         </button>
-                                        <button type="button" class="btn btn-default" title="Add node from text selection" onclick="new_atom_txt_resource_button();">
+                                        <button type="button" class="btn btn-default" title="Add node from text selection" onclick="new_atom_video_resource_button();">
                                             <i class="fa fa-puzzle-piece fa-fw fa-lg"></i>
                                         </button>
                                 </div>
                                 <div>
-                                    <video width="75%" height="50%" controls>
+                                    <video id="video" width="100%" height="100%" controls>
                                         <source src="../uploads/${id}.mp4" type="video/mp4">
                                     </video>
                                 </div>
@@ -90,7 +91,7 @@ function pollTranscription(id){
                                 <div class="form-group" id="contentgroup_`+ tab_id +`">
                                     <label>Content</label>
                                     <div id="textarea">
-                                        <textarea id="` + tab_id + `" class="form-control resource_pane_textarea_content" placeholder="Enter your source text here..." onchange="change_textarea('` + tab_id + `')" onfocus="set_focus(this)" readonly></textarea>
+                                        <div id="` + tab_id + `" class="form-control resource_pane_textarea_content" placeholder="Enter your source text here..." onchange="change_textarea('` + tab_id + `')" onfocus="set_focus(this)" readonly></div>
                                     </div>  
                                 </div> 
                             </form>
@@ -99,10 +100,17 @@ function pollTranscription(id){
                     // Dissplay transcript
                     $('#transcript').html(tab_transcript_tools);
                     var processedTranscript = response.transcript.map(function(item) {
-                        return `\n[${item.timestamp.join(' - ')}] ${item.text}`;
+                        return `
+                            <div id="transcript" class="trancsript-line">
+                                <div class="timestamp" data-timestamp="${item.timestamp}">
+                                    [${item.timestamp.join(' - ')}]
+                                </div>
+                                <div class="transcript-text">${item.text}</div>
+                            </div>
+                            `;
                     }).join('\n');
 
-                    $('#' + tab_id).val(processedTranscript);
+                    $('#' + tab_id).html(processedTranscript);
 
                 }else if(response.status === 'error'){
                     clearInterval(pollInterval);
@@ -114,4 +122,29 @@ function pollTranscription(id){
             }
         });
     }, 5000);//Poll every 5 sec
+}
+
+function skipTo(time) {
+    var video = document.getElementById('video');
+    video.currentTime = time;
+    video.play();
+}
+
+function new_atom_video_resource_button() {
+    const selection = window.getSelection();
+
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const selectedNode = range.commonAncestorContainer;
+
+        const targetElements = document.getElementsByClassName("transcript-text");
+
+        for (let element of targetElements) {
+            if (element.contains(selectedNode)) {
+                const text = selection.toString();
+                //console.log(text);
+                add_new_atom_node(text);
+            }
+        }
+    }
 }

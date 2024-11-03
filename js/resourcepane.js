@@ -6,6 +6,7 @@ function add_tab(load_id=null, type=null) {
 	if (load_id == null) {
         var new_resource = add_resource(' ');
     	tab_id = new_resource.id;
+        new_resource.type = type;
 	    add_resource_metadata(tab_id, 'title', '');
     	localStorage.setItem("state",JSON.stringify(get_sd()));
 	} 
@@ -40,6 +41,7 @@ function load_tab(resource) {
 	if (resource != null) {
 		var tab_id = resource.id;
         var resource_type = resource.type;
+        console.log(resource_type);
         add_tab(tab_id, resource_type);
         set_text_resource_title(tab_id, resource.metadata.title);
         set_text_resource_content(tab_id, resource.content);
