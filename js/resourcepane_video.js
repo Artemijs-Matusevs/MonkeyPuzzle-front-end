@@ -1,11 +1,18 @@
 function add_video_resource_body(tab_id) {
     var tab_body = $(`
         <div id="` + tab_id + `_body" class="resource_pane_tab_content">
-            <form id="video-upload-form" action="/upload-video" method="POST" enctype="multipart/form-data">
+        <h1> `+ tab_id +` </h1>
+            <form id="video-upload-form` + tab_id +`" action="/upload-video" method="POST" enctype="multipart/form-data">
                 <input type="file" name="video" accept="video/*" required />
                 <button type="submit">Upload Video</button>
+
+                <button type="button" class="btn btn-default" onclick="document.getElementById('fileLoader${tab_id}').click()" title="Load saved tab">
+                    <i class="fa fa-upload fa-fw fa-lg"></i>
+                </button>
+                <input type="file" id="fileLoader`+ tab_id +`" accept=".json" style="display: none;" onchange="load_video_resource_tab(event,'${tab_id}')">
+
             </form>
-            <div id="transcript"></div>
+            <div id="transcript`+ tab_id +`"></div>
         </div>
 
     `); 
@@ -15,14 +22,14 @@ function add_video_resource_body(tab_id) {
 }
 
 function fetch_transcript(tab_id){
-    $('#video-upload-form').on('submit', function(e) {
+    $(`#video-upload-form${tab_id}`).on('submit', function(e) {
         e.preventDefault();
 
         var formData = new FormData();
         formData.append('tab_id', tab_id);
 
         // Append the file from the form input
-        var fileInput = $('#video-upload-form input[type="file"]')[0];
+        var fileInput = $(`#video-upload-form${tab_id} input[type="file"]`)[0];
         if (fileInput && fileInput.files.length > 0){
             formData.append('video', fileInput.files[0]);
         }
@@ -37,12 +44,12 @@ function fetch_transcript(tab_id){
                 var transcriptId= response.transcriptId;
 
                 //Start polling for the transcript status
-                $('#transcript').text('Processing...');
+                $(`#transcript${tab_id}`).text('Processing...');
                 pollTranscription(transcriptId);
             },
             error: function(xhr, status, error){
                 console.error('Error:', error);
-                $('#transcript').text('Error during upload or transcription');
+                $(`#transcript${tab_id}`).text('Error during upload or transcription');
             }
         })
     } )
@@ -64,13 +71,13 @@ function pollTranscription(id){
 
                     //Create new HTML structure with the transcript text
                     var tab_transcript_tools = (`
-                        <div id="transcript-data" + ${id}>
+                        <div id="transcript-data + ${id}">
                             <form>
                                 <div class="form-group">
                                         <button type="button" class="btn btn-default" onclick="remove_tab()" title="Remove this tab from the resource pane">
                                             <i class="fa fa-trash fa-fw fa-lg"></i>
                                         </button>
-                                        <button type="button" class="btn btn-default" onclick="filemanager('save','txt','` + tab_id + `')" title="Save this resource tab to a text file">
+                                        <button type="button" class="btn btn-default" onclick="save_video_resource_tab('${id}')" title="Save this tab">
                                             <i class="fa fa-download fa-fw fa-lg"></i>
                                         </button>
                                         <button type="button" class="btn btn-default" title="Add node from text selection" onclick="new_atom_video_resource_button();">
@@ -82,20 +89,21 @@ function pollTranscription(id){
                                         <source src="../uploads/${id}.mp4" type="video/mp4">
                                     </video>
                                 </div>
-                                <div class="form-group">
-                                    <label>Title</label>
-                                    <textarea id="title_` + tab_id + `" type="text" rows="1" class="form-control resource_pane_title_text" placeholder="The name of this resource..." onchange="change_title('` + tab_id + `')"></textarea>                 </div>
-                                <div class="form-group" id="contentgroup_`+ tab_id +`">
+
+                                <div class="form-group" id="contentgroup_`+ id +`">
                                     <label>Content</label>
                                     <div id="textarea">
-                                        <div id="` + tab_id + `" class="form-control resource_pane_textarea_content" placeholder="Enter your source text here..." onchange="change_textarea('` + tab_id + `')" onfocus="set_focus(this)" readonly></div>
+                                        <div id="` + id + `" class="form-control resource_pane_textarea_content" placeholder="Enter your source text here..." onchange="change_textarea('` + tab_id + `')" onfocus="set_focus(this)" readonly></div>
                                     </div>  
                                 </div> 
                             </form>
                         </div>`)
 
+                    //Remove video upload form
+                    $(`#video-upload-form${id}`).html("");
+
                     // Dissplay transcript
-                    $('#transcript').html(tab_transcript_tools);
+                    $(`#transcript${id}`).html(tab_transcript_tools);
                     var processedTranscript = response.transcript.map(function(item) {
                         return `
                             <div id="transcript" class="trancsript-line">
@@ -107,7 +115,7 @@ function pollTranscription(id){
                             `;
                     }).join('\n');
 
-                    $('#' + tab_id).html(processedTranscript);
+                    $('#' + id).html(processedTranscript);
 
                 }else if(response.status === 'error'){
                     clearInterval(pollInterval);
@@ -127,6 +135,7 @@ function skipTo(time) {
     video.play();
 }
 
+//Adding new atom nodes from transcripted text
 function new_atom_video_resource_button() {
     const selection = window.getSelection();
 
@@ -144,4 +153,67 @@ function new_atom_video_resource_button() {
             }
         }
     }
+}
+
+//Saving video resource tab
+function save_video_resource_tab(tab_id) {
+    //const tab = $(`#transcript-data + ${tab_id}`);
+
+    const tab = document.getElementById(`transcript-data + ${tab_id}`);
+
+    //console.log(tab.innerHTML);
+
+    //Get the html content
+    const content = tab.innerHTML;
+
+
+    //Object to hold this data
+    const savedData = {
+        tabId: tab_id,
+        tabContent: content
+    };
+
+    // Convert the data to JSON format
+    const savedDataJSON = JSON.stringify(savedData);
+
+    const blob = new Blob([savedDataJSON], {type: "application/json"});
+
+    // Save the JSON file
+    saveAs(blob, `tab_${tab_id}_data.json`);
+} 
+
+//Loading video resource tab
+function load_video_resource_tab(event, tab_id) {
+    const file = event.target.files[0];
+
+    if(!file) {
+        alert("No file selected");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        try{
+            const savedData = JSON.parse(e.target.result);
+
+            const content = savedData.tabContent;
+            const tab = document.getElementById(`transcript${tab_id}`);
+            alert(tab_id);
+
+            //Remove video upload form
+            $(`#video-upload-form${tab_id}`).html("");
+            
+            tab.innerHTML = content;
+
+
+            alert("Tab loaded successfully");
+        }catch (error) {
+            console.error("Error loading tab:", error);
+            alert("Failed to load tab");
+        }
+    }
+
+    reader.readAsText(file);
+
 }
