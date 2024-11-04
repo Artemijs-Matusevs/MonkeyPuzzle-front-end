@@ -1,15 +1,18 @@
 function add_video_resource_body(tab_id) {
     var tab_body = $(`
         <div id="` + tab_id + `_body" class="resource_pane_tab_content">
-        <h1> `+ tab_id +` </h1>
             <form id="video-upload-form` + tab_id +`" action="/upload-video" method="POST" enctype="multipart/form-data">
-                <input type="file" name="video" accept="video/*" required />
-                <button type="submit">Upload Video</button>
+                <input id="video-upload`+ tab_id +`" type="file" style="display: none;" onchange="fetch_transcript('${tab_id}');" name="video" accept="video/*" required />
+                <button onclick="document.getElementById('video-upload${tab_id}').click()" type="submit">Upload Video</button>
 
                 <button type="button" class="btn btn-default" onclick="document.getElementById('fileLoader${tab_id}').click()" title="Load saved tab">
                     <i class="fa fa-upload fa-fw fa-lg"></i>
                 </button>
                 <input type="file" id="fileLoader`+ tab_id +`" accept=".json" style="display: none;" onchange="load_video_resource_tab(event,'${tab_id}')">
+
+                <button type="button" class="btn btn-default" onclick="remove_tab()" title="Remove this tab from the resource pane">
+                    <i class="fa fa-trash fa-fw fa-lg"></i>
+                </button>
 
             </form>
             <div id="transcript`+ tab_id +`"></div>
@@ -18,12 +21,9 @@ function add_video_resource_body(tab_id) {
     `); 
     
     $(".tab_body").append(tab_body);
-    fetch_transcript(tab_id);
 }
 
 function fetch_transcript(tab_id){
-    $(`#video-upload-form${tab_id}`).on('submit', function(e) {
-        e.preventDefault();
 
         var formData = new FormData();
         formData.append('tab_id', tab_id);
@@ -51,9 +51,7 @@ function fetch_transcript(tab_id){
                 console.error('Error:', error);
                 $(`#transcript${tab_id}`).text('Error during upload or transcription');
             }
-        })
-    } )
-}
+        })}
 
 function pollTranscription(id){
 
@@ -199,11 +197,11 @@ function load_video_resource_tab(event, tab_id) {
 
             const content = savedData.tabContent;
             const tab = document.getElementById(`transcript${tab_id}`);
-            alert(tab_id);
+            //alert(tab_id);
 
             //Remove video upload form
             $(`#video-upload-form${tab_id}`).html("");
-            
+
             tab.innerHTML = content;
 
 
