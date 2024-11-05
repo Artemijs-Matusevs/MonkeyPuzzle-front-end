@@ -54,8 +54,6 @@ function fetch_transcript(tab_id){
         })}
 
 function pollTranscription(id){
-
-
     var pollInterval = setInterval(function() {
         $.ajax({
             url: '/transcript-status/' + id,
@@ -83,7 +81,7 @@ function pollTranscription(id){
                                         </button>
                                 </div>
                                 <div>
-                                    <video id="video" width="100%" height="100%" controls>
+                                    <video id="video${id}" width="100%" height="100%" controls>
                                         <source src="../uploads/${id}.mp4" type="video/mp4">
                                     </video>
                                 </div>
@@ -105,7 +103,7 @@ function pollTranscription(id){
                     var processedTranscript = response.transcript.map(function(item) {
                         return `
                             <div id="transcript" class="trancsript-line">
-                                <div class="timestamp" onclick=skipTo(${item.timestamp[0]}) data-timestamp="${item.timestamp}">
+                                <div class="timestamp" onclick="skipTo('${item.timestamp[0]}', '${id}')" data-timestamp="${item.timestamp}">
                                     [${item.timestamp.join(' - ')}]
                                 </div>
                                 <div class="transcript-text">${item.text}</div>
@@ -127,8 +125,9 @@ function pollTranscription(id){
     }, 5000);//Poll every 5 sec
 }
 
-function skipTo(time) {
-    var video = document.getElementById('video');
+//Skip to specific time in the video
+function skipTo(time, id) {
+    var video = document.getElementById(`video${id}`);
     video.currentTime = time;
     video.play();
 }
@@ -196,16 +195,29 @@ function load_video_resource_tab(event, tab_id) {
             const savedData = JSON.parse(e.target.result);
 
             const content = savedData.tabContent;
+            const videoId = savedData.tabId;
             const tab = document.getElementById(`transcript${tab_id}`);
             //alert(tab_id);
 
-            //Remove video upload form
-            $(`#video-upload-form${tab_id}`).html("");
+            console.log(content);
 
-            tab.innerHTML = content;
+            //Check to see if a tab like this has already been loaded
+            const existingVideo = document.getElementById(`video${videoId}`);
+
+            if(existingVideo){
+                alert("This tab has already been loaded");
+            }
+            
+            else{
+                //Remove video upload form
+                $(`#video-upload-form${tab_id}`).html("");
+
+                tab.innerHTML = content;
 
 
-            alert("Tab loaded successfully");
+                alert("Tab loaded successfully");
+            }
+
         }catch (error) {
             console.error("Error loading tab:", error);
             alert("Failed to load tab");
