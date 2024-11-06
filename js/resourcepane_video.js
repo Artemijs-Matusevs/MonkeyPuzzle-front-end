@@ -157,12 +157,14 @@ function new_atom_video_resource_button() {
         const range = selection.getRangeAt(0);
         const selectedNode = range.commonAncestorContainer;
 
-        const targetElements = document.getElementsByClassName("transcript-text");
+        const targetElements = document.getElementsByClassName("resource_pane_textarea_content");
 
         for (let element of targetElements) {
             if (element.contains(selectedNode)) {
-                const text = selection.toString();
+                let text = selection.toString();
                 //console.log(text);
+                text = text.replace(/\[\d+(\.\d+)?\s*-\s*\d+(\.\d+)?\]\s*/g, "").trim(); // Remove timestamps
+
                 add_new_atom_node(text);
             }
         }
