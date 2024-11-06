@@ -13,7 +13,6 @@ function add_video_resource_body(tab_id) {
                 <button type="button" class="btn btn-default" onclick="remove_tab()" title="Remove this tab from the resource pane">
                     <i class="fa fa-trash fa-fw fa-lg"></i>
                 </button>
-
             </form>
             <div id="transcript`+ tab_id +`"></div>
         </div>
@@ -79,6 +78,24 @@ function pollTranscription(id){
                                         <button type="button" class="btn btn-default" title="Add node from text selection" onclick="new_atom_video_resource_button();">
                                             <i class="fa fa-puzzle-piece fa-fw fa-lg"></i>
                                         </button>
+
+                                        <div class="speaker-selection">
+                                        <button type="button" class="btn btn-default" onclick="highlight_speaker('#555555')" title="Highlight default">
+                                            <i style="color: black;" class="fa fa-regular fa-user fa-fw fa-lg"></i>
+                                        </button>
+
+                                        <button type="button" class="btn btn-default" onclick="highlight_speaker('red')" title="Highlight speaker 1">
+                                            <i style="color: red;" class="fa fa-regular fa-user fa-fw fa-lg"></i>
+                                        </button>
+
+                                        <button type="button" class="btn btn-default" onclick="highlight_speaker('blue')" title="Highlight speaker 2">
+                                            <i style="color: blue;" class="fa fa-regular fa-user fa-fw fa-lg"></i>
+                                        </button>
+
+                                        <button type="button" class="btn btn-default" onclick="highlight_speaker('green')" title="Highlight speaker 3">
+                                            <i style="color: green;" class="fa fa-regular fa-user fa-fw fa-lg"></i>
+                                        </button>
+                                        </div>
                                 </div>
                                 <div>
                                     <video id="video${id}" width="100%" height="100%" controls>
@@ -207,7 +224,7 @@ function load_video_resource_tab(event, tab_id) {
             if(existingVideo){
                 alert("This tab has already been loaded");
             }
-            
+
             else{
                 //Remove video upload form
                 $(`#video-upload-form${tab_id}`).html("");
@@ -225,5 +242,31 @@ function load_video_resource_tab(event, tab_id) {
     }
 
     reader.readAsText(file);
+}
 
+//Highlight different speaker
+function highlight_speaker(color){
+    const selection = window.getSelection();
+
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const selectedNode = range.commonAncestorContainer;
+
+        const targetElements = document.getElementsByClassName("transcript-text");
+
+        for (let element of targetElements) {
+            if (element.contains(selectedNode)) {
+                const text = selection.toString();
+
+                //Create a span element to replace the selected text
+                const span = document.createElement("span");
+                span.style.color = color;
+                span.textContent = text;
+
+                //Replace the text
+                range.deleteContents();
+                range.insertNode(span);
+            }
+        }
+    }
 }

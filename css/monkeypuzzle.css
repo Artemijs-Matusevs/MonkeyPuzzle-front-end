@@ -202,3 +202,7 @@
     .transcript-text{
         margin-bottom: 15px; 
     }
+
+    .speaker-selection{
+        display: block;
+    }
