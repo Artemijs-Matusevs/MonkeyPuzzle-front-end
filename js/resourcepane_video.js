@@ -120,10 +120,10 @@ function pollTranscription(id){
                     var processedTranscript = response.transcript.map(function(item) {
                         return `
                             <div id="transcript" class="trancsript-line">
-                                <div class="timestamp" onclick="skipTo('${item.timestamp[0]}', '${id}')" data-timestamp="${item.timestamp}">
+                                <div class="timestamp" onclick="skipTo('${item.timestamp[0]}', '${id}')" >
                                     [${item.timestamp.join(' - ')}]
                                 </div>
-                                <div class="transcript-text">${item.text}</div>
+                                <div class="transcript-text" data-videoId="${id}" data-timestamp="${item.timestamp[0]}">${item.text}</div>
                             </div>
                             `;
                     }).join('\n');
@@ -146,7 +146,6 @@ function pollTranscription(id){
 function skipTo(time, id) {
     var video = document.getElementById(`video${id}`);
     video.currentTime = time;
-    video.play();
 }
 
 //Adding new atom nodes from transcripted text
@@ -157,13 +156,23 @@ function new_atom_video_resource_button() {
         const range = selection.getRangeAt(0);
         const selectedNode = range.commonAncestorContainer;
 
-        const targetElements = document.getElementsByClassName("resource_pane_textarea_content");
+        //const timestamp
+        //const videoId
+
+        const targetElements = document.getElementsByClassName("transcript-text");
+
 
         for (let element of targetElements) {
+            //console.log(element.getAttribute("data-videoId"));
+            //console.log(element.getAttribute("data-timestamp"));
+
             if (element.contains(selectedNode)) {
                 let text = selection.toString();
+                const videoId = element.getAttribute("data-videoId");
+                const timestamp = element.getAttribute("data-timestamp");
+
+
                 //console.log(text);
-                text = text.replace(/\[\d+(\.\d+)?\s*-\s*\d+(\.\d+)?\]\s*/g, "").trim(); // Remove timestamps
 
                 // Attempt to get the text color of the selection
                 let textColor = null;
@@ -175,7 +184,7 @@ function new_atom_video_resource_button() {
                     textColor = window.getComputedStyle(selectedNode.parentElement).color;
                 }
 
-                add_new_atom_node(text, textColor);
+                add_new_atom_node(text, textColor, videoId, timestamp);
             }
         }
     }

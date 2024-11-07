@@ -407,6 +407,20 @@ function initCytoscape() {
         $(":focus").blur();        
     });
 
+    //SYNC UP VIDEO WITH NODES
+    cy.on("tap", 'node', (event) => {
+        //alert("TEST");
+        const node = event.target;
+        const time = node.data('timestamp');
+        const videoId = node.data('videoId');
+
+        console.log(event.target);
+
+        if(videoId && document.getElementById(videoId)){
+            skipTo(time, videoId)
+        }
+    })
+
     cy.on("layoutstart", function(){
         running = true;
     });
@@ -484,9 +498,9 @@ function loadJSON(json_value) {
  *
  * */
 
-function add_new_atom_node(content, color="#0000") {
+function add_new_atom_node(content, color="#0000", videoId=null, timestamp=null) {
     var meta = {"hello":"world"};
-    var new_atom = add_atom(content, color);
+    var new_atom = add_atom(content, color, videoId, timestamp);
     var atom_id = new_atom.id;
     if (focused != null) {
         add_source(atom_id, focused.id, content, 0, 0);
@@ -495,7 +509,7 @@ function add_new_atom_node(content, color="#0000") {
         position = {"x": cy.width()/2, "y": cy.height()/2};
     }
     cy.add([
-        {group: "nodes", data: {id: atom_id.toString(),
+        {group: "nodes", data: {videoId:videoId, timestamp: timestamp, id: atom_id.toString(),
             content: content, type: "atom", typeshape: "roundrectangle", metadata: meta }, 
             classes: "atom-label", locked: false, renderedPosition: position, style: {'color': color}}
     ]);
