@@ -28,6 +28,7 @@ function initialise_monkeypuzzle() {
     {
         loadJSON(localStorage.getItem("state"));
         initCytoscape();
+        loadJSON(localStorage.getItem("state"));
     //else use default
     } else
     {
@@ -453,15 +454,23 @@ function loadJSON(json_value) {
     localStorage.setItem("state",JSON.stringify(get_sd()));
     current_sadface_doc = JSON.stringify(get_sd());
 
+    //console.log(json);
+
+
+
     remove_all_tabs();
     window.onload = function () {
         json.resources.forEach(function(tab) {load_tab(tab);})
     };
     cy_data = export_cytoscape(json);
+    console.log(cy_data);
     if(cy !== null)
     {
+
         cy.elements().remove();
         cy.json({elements: JSON.parse(cy_data)});
+
+
         redraw_visualisation();
     }
 }
@@ -475,9 +484,9 @@ function loadJSON(json_value) {
  *
  * */
 
-function add_new_atom_node(content) {
+function add_new_atom_node(content, color="#0000") {
     var meta = {"hello":"world"};
-    var new_atom = add_atom(content);
+    var new_atom = add_atom(content, color);
     var atom_id = new_atom.id;
     if (focused != null) {
         add_source(atom_id, focused.id, content, 0, 0);
@@ -488,7 +497,7 @@ function add_new_atom_node(content) {
     cy.add([
         {group: "nodes", data: {id: atom_id.toString(),
             content: content, type: "atom", typeshape: "roundrectangle", metadata: meta }, 
-            classes: "atom-label", locked: false, renderedPosition: position}
+            classes: "atom-label", locked: false, renderedPosition: position, style: {'color': color}}
     ]);
     position = null;
     update_local_storage();
@@ -572,6 +581,7 @@ function update_local_storage() {
     cm.hideMenuItem("redo");
     localStorage.setItem("state", JSON.stringify(get_sd()));
     current_sadface_doc = JSON.stringify(get_sd());
+    //console.log(current_sadface_doc)
     update();
 }
 

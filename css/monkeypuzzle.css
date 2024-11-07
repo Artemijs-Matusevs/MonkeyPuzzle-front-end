@@ -206,3 +206,7 @@
     .speaker-selection{
         display: block;
     }
+
+    .red{
+        color: red;
+    }

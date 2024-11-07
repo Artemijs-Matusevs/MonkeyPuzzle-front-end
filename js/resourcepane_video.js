@@ -165,7 +165,17 @@ function new_atom_video_resource_button() {
                 //console.log(text);
                 text = text.replace(/\[\d+(\.\d+)?\s*-\s*\d+(\.\d+)?\]\s*/g, "").trim(); // Remove timestamps
 
-                add_new_atom_node(text);
+                // Attempt to get the text color of the selection
+                let textColor = null;
+
+                // Check if the selected text is wrapped in a span or other styled element
+                if (selectedNode.nodeType === Node.ELEMENT_NODE) {
+                    textColor = window.getComputedStyle(selectedNode).color;
+                } else if (selectedNode.parentElement) {
+                    textColor = window.getComputedStyle(selectedNode.parentElement).color;
+                }
+
+                add_new_atom_node(text, textColor);
             }
         }
     }

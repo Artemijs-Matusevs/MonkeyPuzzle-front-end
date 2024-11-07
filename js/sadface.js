@@ -162,14 +162,14 @@ function add_edge(source_id, target_id) {
     }
 }
 
-function add_atom(text) {
+function add_atom(text, color="#0000") {
     /*    
     Create a new argument atom using the supplied text
 
     Returns: the new atom dict
     */
     if (text) {
-        var atom = new_atom(text);
+        var atom = new_atom(text, color);
         sd.nodes.push(atom);
         return atom;
     }
@@ -486,8 +486,10 @@ function export_cytoscape(sadface) {
     sadface.nodes.forEach(function(node) {
         var n = {};
         n.data = {};
+        n.style = {};
         n.data.id = node.id;
         n.data.type = node.type;
+        n.style.color = node.color;
 
         if (n.data.type === "atom") {
             n.classes = "atom-label";
@@ -507,8 +509,10 @@ function export_cytoscape(sadface) {
     sadface.nodes.forEach(function(node) {
         var n = {};
         n.data = {};
+        n.style = {};
         n.data.id = node.id;
         n.data.type = node.type;
+        n.style.color = node.color;
 
         if (n.data.type === "atom") {
         } else if (n.data.type === "scheme") {
@@ -748,14 +752,14 @@ function init() {
     return new_sadface();
 }
 
-function new_atom(text) {
+function new_atom(text, color="#0000") {
     /*
     Creates a new SADFace atom node (dict) using the supplied text
 
     Returns: A dict representing the new SADFace atom
     */
     if (text) {
-        var new_atom = {"id":new_uuid(), "type":"atom", "text":text, "sources":[], "metadata":{}};
+        var new_atom = {"id":new_uuid(), "type":"atom", "text":text, "sources":[], "metadata":{}, "color": color};
         return new_atom;
     }
 }
