@@ -1,20 +1,20 @@
 function add_video_resource_body(tab_id) {
     var tab_body = $(`
-        <div id="` + tab_id + `_body" class="resource_pane_tab_content">
-            <form id="video-upload-form` + tab_id +`" action="/upload-video" method="POST" enctype="multipart/form-data">
-                <input id="video-upload`+ tab_id +`" type="file" style="display: none;" onchange="fetch_transcript('${tab_id}');" name="video" accept="video/*" required />
-                <button onclick="document.getElementById('video-upload${tab_id}').click()" type="submit">Upload Video</button>
+        <div data-tab-id="${tab_id}" id="` + tab_id + `_body" class="resource_pane_tab_content">
+            <form data-tab-id="${tab_id}" id="video-upload-form` + tab_id +`" action="/upload-video" method="POST" enctype="multipart/form-data">
+                <input data-tab-id="${tab_id}" id="video-upload`+ tab_id +`" type="file" style="display: none;" onchange="fetch_transcript('${tab_id}');" name="video" accept="video/*" required />
+                <button data-tab-id="${tab_id}" onclick="document.getElementById('video-upload${tab_id}').click()" type="submit">Upload Video</button>
 
-                <button type="button" class="btn btn-default" onclick="document.getElementById('fileLoader${tab_id}').click()" title="Load saved tab">
+                <button data-tab-id="${tab_id}" type="button" class="btn btn-default" onclick="document.getElementById('fileLoader${tab_id}').click()" title="Load saved tab">
                     <i class="fa fa-upload fa-fw fa-lg"></i>
                 </button>
-                <input type="file" id="fileLoader`+ tab_id +`" accept=".json" style="display: none;" onchange="load_video_resource_tab(event,'${tab_id}')">
+                <input data-tab-id="${tab_id}" type="file" id="fileLoader`+ tab_id +`" accept=".json" style="display: none;" onchange="load_video_resource_tab(event,'${tab_id}')">
 
                 <button type="button" class="btn btn-default" onclick="remove_tab()" title="Remove this tab from the resource pane">
                     <i class="fa fa-trash fa-fw fa-lg"></i>
                 </button>
             </form>
-            <div id="transcript`+ tab_id +`"></div>
+            <div data-tab-id="${tab_id}" id="transcript`+ tab_id +`"></div>
         </div>
 
     `); 
@@ -190,11 +190,34 @@ function new_atom_video_resource_button() {
     }
 }
 
+//Function to replaces tab IDs
+function updateTabId(oldId, newId) {
+
+    //Update the button
+    const tab_button = document.getElementById(`${oldId}_btn`);
+    tab_button.id = `${newId}_btn`;
+    tab_button.setAttribute('onclick', tab_button.getAttribute('onclick').replace(oldId, newId));
+
+    const elements = document.querySelectorAll(`[data-tab-id="${oldId}"]`);
+
+    elements.forEach((element) => {
+        element.setAttribute('data-tab-id', newId);
+
+        if (element.id) {
+            element.id = element.id.replace(oldId, newId);
+        }
+        if (element.getAttribute('onclick')) {
+            element.setAttribute('onclick', element.getAttribute('onclick').replace(oldId, newId));
+        }
+    });
+}
+
 //Saving video resource tab
 function save_video_resource_tab(tab_id) {
     //const tab = $(`#transcript-data + ${tab_id}`);
 
-    const tab = document.getElementById(`transcript-data + ${tab_id}`);
+    const tab = document.getElementById(`transcript${tab_id}`);
+    console.log(tab_id);
 
     //console.log(tab.innerHTML);
 
@@ -217,6 +240,8 @@ function save_video_resource_tab(tab_id) {
     saveAs(blob, `tab_${tab_id}_data.json`);
 } 
 
+
+
 //Loading video resource tab
 function load_video_resource_tab(event, tab_id) {
     const file = event.target.files[0];
@@ -233,14 +258,15 @@ function load_video_resource_tab(event, tab_id) {
             const savedData = JSON.parse(e.target.result);
 
             const content = savedData.tabContent;
-            const videoId = savedData.tabId;
+            const newId = savedData.tabId;
+
             const tab = document.getElementById(`transcript${tab_id}`);
             //alert(tab_id);
 
-            console.log(content);
+            //console.log(content);
 
             //Check to see if a tab like this has already been loaded
-            const existingVideo = document.getElementById(`video${videoId}`);
+            const existingVideo = document.getElementById(`video${newId}`);
 
             if(existingVideo){
                 alert("This tab has already been loaded");
@@ -251,6 +277,8 @@ function load_video_resource_tab(event, tab_id) {
                 $(`#video-upload-form${tab_id}`).html("");
 
                 tab.innerHTML = content;
+                //Replace the IDs
+                 updateTabId(tab_id, newId);
 
 
                 alert("Tab loaded successfully");
