@@ -123,7 +123,7 @@ function pollTranscription(id){
                                 <div class="timestamp" onclick="skipTo('${item.timestamp[0]}', '${id}')" >
                                     [${item.timestamp.join(' - ')}]
                                 </div>
-                                <div class="transcript-text" data-videoId="${id}" data-timestamp="${item.timestamp[0]}">${item.text}</div>
+                                <div class="transcript-text" data-videoId="${id}" data-timestamp="${item.timestamp[0]}" contenteditable="true">${item.text}</div>
                             </div>
                             `;
                     }).join('\n');
@@ -141,6 +141,7 @@ function pollTranscription(id){
         });
     }, 5000);//Poll every 5 sec
 }
+
 
 //Skip to specific time in the video
 function skipTo(time, id) {
@@ -279,6 +280,7 @@ function load_video_resource_tab(event, tab_id) {
                 tab.innerHTML = content;
                 //Replace the IDs
                  updateTabId(tab_id, newId);
+                 set_active_tab(`${newId}_body`)
 
 
                 alert("Tab loaded successfully");
