@@ -31,6 +31,7 @@ function fetch_transcript(tab_id){
         var fileInput = $(`#video-upload-form${tab_id} input[type="file"]`)[0];
         if (fileInput && fileInput.files.length > 0){
             formData.append('video', fileInput.files[0]);
+            $(`#transcript${tab_id}`).text('Uploading file...');
         }
 
         $.ajax({
